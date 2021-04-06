@@ -2,16 +2,16 @@
 using MonitoriaServicosApi.Models.Models;
 using MonitoriaServicosApi.Models.Models.Enum;
 using MonitoriaServicosApi.Repository.Repository;
+using MonitoriaServicosApi.Repository.Repository.Interface;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace MonitoriaServicosApi.Business
 {
     public class LogErroBusiness : ILogErroBusiness
     {
-        private readonly LogErroRepository _logErroRepository;
+        private readonly ILogErroRepository _logErroRepository;
 
         public LogErroBusiness()
         {
@@ -22,7 +22,6 @@ namespace MonitoriaServicosApi.Business
         {
             try
             {
-              
                 var data = $"{logErro.dataErro}";
                 var log = new LogErroServico()
                 {
@@ -51,7 +50,7 @@ namespace MonitoriaServicosApi.Business
             {
                 var logAgrupado = new List<LogErroServico>();
 
-                if(origem == OrigemServicoEnum.ProAdv.ToString())
+                if (origem == OrigemServicoEnum.ProAdv.ToString())
                     logAgrupado = _logErroRepository.GetLogErroServicoProadv(idServico);
                 else if (origem == OrigemServicoEnum.IntegracaoExterna.ToString())
                     logAgrupado = _logErroRepository.GetLogErroServicoIntegracaoBipBop(idServico);
@@ -80,10 +79,24 @@ namespace MonitoriaServicosApi.Business
                         throw new Exception(ex.Message + log.ServicoId);
                     }
                 }
-            //});
+                //});
 
+                return objs;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
 
-                return objs.OrderByDescending(o => o.dataErro).ToList();
+        public bool SolucionarErrosServico(string idServico)
+        {
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(idServico))
+                    return _logErroRepository.SolucionarErrosServico(idServico);
+                else
+                    return false;
             }
             catch (Exception ex)
             {

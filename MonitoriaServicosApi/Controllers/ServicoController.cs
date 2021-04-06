@@ -31,6 +31,21 @@ namespace MonitoriaServicosApi.Controllers
             }
         }
 
+        [Route("GetServicosFiltro")]
+        [HttpPost]
+        public ActionResult GetServicosFiltro(object filtroServico)
+        {
+            try
+            {
+                dynamic filtro = JsonConvert.DeserializeObject<object>(filtroServico.ToString());
+                return Ok(_servicoBusiness.GetServicosFiltro(filtro));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
+
         [Route("AtualizaServico")]
         [HttpPost]
         public ActionResult AtualizaServico(object servico)

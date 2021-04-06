@@ -46,5 +46,20 @@ namespace MonitoriaServicosApi.Controllers
                 return StatusCode(500, ex);
             }
         }
+
+        [Route("GetSolucionarErrosServico/{idServico}")]
+        [HttpGet]
+        public ActionResult GetSolucionarErrosServico(string idServico)
+        {
+            try
+            {
+                
+                return Ok(_logErroBusiness.SolucionarErrosServico(idServico));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
     }
 }

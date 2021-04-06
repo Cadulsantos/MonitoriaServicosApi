@@ -81,6 +81,18 @@ namespace MonitoriaServicosApi.Repository.Repository
             return result;
         }
 
+        public bool SolucionarErrosServico(string idServico)
+        {
+            var update = Builders<LogErroServico>.Update
+                .Set(s => s.Resolvido, true)
+                .Set(s => s.DataResolucao, DateTime.Now);
+
+            var result = collectionProadv.UpdateMany(x => x.ServicoId == idServico && !x.Resolvido, update).MatchedCount > 0;
+
+           return result;
+
+        }
+
         public List<LogErroServico> GetLogErroServicoIntegracaoBipBop(string idServico)
         {
             var result = collectionInt.Aggregate()

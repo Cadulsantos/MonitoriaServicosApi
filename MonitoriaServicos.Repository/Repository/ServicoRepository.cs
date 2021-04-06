@@ -25,5 +25,10 @@ namespace MonitoriaServicosApi.Repository.Repository
         {
             return collection.Find("{}").ToList();
         }
+
+        public List<Servico> GetServicosByExpression(FilterDefinition<Servico> filtro)
+        {
+            return collection.Find(filtro).ToList();
+        }
     }
 }
