@@ -1,13 +1,17 @@
 ﻿using MongoDB.Driver;
 using MonitoriaServicosApi.Models.Models;
 using MonitoriaServicosApi.Repository.Repository.Interface;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MonitoriaServicosApi.Repository.Repository
 {
     public class ServicoRepository : IServicoRepository
     {
         private IMongoCollection<Servico> collection = Context.ConexaoProdMongo.GetCollection<Servico>("servicos");
+        private IMongoCollection<LogErroServico> collectioLogErro = Context.ConexaoProdMongo.GetCollection<LogErroServico>("LogErrorServico");
+        private IMongoCollection<LogExecucaoServico> collectionLogExecucao = Context.ConexaoProdMongo.GetCollection<LogExecucaoServico>("logExecucaoServico");
 
         public bool AtualizaServico(Servico servico)
         {
@@ -23,7 +27,48 @@ namespace MonitoriaServicosApi.Repository.Repository
 
         public List<Servico> GetServicos()
         {
+            //GetServicos2();
             return collection.Find("{}").ToList();
+        }
+
+        public List<dynamic> GetServicos2()
+        {
+            try
+            {
+                var data = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
+
+                var listServico = (from s in collection.AsQueryable()
+                                   join logErro in collectioLogErro.AsQueryable() on s.Id equals logErro.Servico into erroCount
+                                   join logExec in collectionLogExecucao.AsQueryable() on s.Id equals logExec.idServico into ultimaExec
+                                   //join logErro in collectioLogErro.AsQueryable().Where(x => !x.Resolvido && x.DataErro > DateTime.Today.AddDays(-30)) on s.Id equals logErro.Servico into erroCount
+                                   //join logExec in collectionLogExecucao.AsQueryable().Where(x => x.DataInicio > data).OrderByDescending(o => o.DataInicio) on s.Id equals logExec.idServico into ultimaExec
+                                   select new
+                                   {
+                                       id = s.Id,
+                                       nome = s.Nome,
+                                       nomeArgument = s.NomeArgument,
+                                       ativo = s.Ativo,
+                                       descricao = s.Descricao,
+                                       periodicidade = s.Periodicidade,
+                                       data = ultimaExec.ToList().FirstOrDefault().DataInicio != null ? ultimaExec.ToList().FirstOrDefault().DataInicio.Date : DateTime.MinValue,
+                                       dataInicio = ultimaExec.ToList().FirstOrDefault().DataInicio != null ? ultimaExec.ToList().FirstOrDefault().DataInicio.Date.ToString() : "Serviço não Executado",
+                                       dataFim = ultimaExec.ToList().FirstOrDefault().DataFim != null ? ultimaExec.ToList().FirstOrDefault().DataFim.ToString() : "",
+                                       origem = s.Origem.ToString(),
+                                       quantidadeErros = erroCount.Count().ToString(),
+                                       erro = erroCount.Count() > 0
+                                   })
+                                   .ToList()
+                                   .OrderByDescending(o => o.data)
+                                   .ToList();
+
+                
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+            }
+
+            return null;
         }
 
         public List<Servico> GetServicosByExpression(FilterDefinition<Servico> filtro)
