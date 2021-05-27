@@ -12,5 +12,7 @@ namespace MonitoriaServicosApi.Business.Interface
         bool AtualizaStatusLog(dynamic logErro);
 
         bool SolucionarErrosServico(string idServico);
+
+        List<dynamic> GetLogErrosServicoPag(string idServico, int pagina);
     }
 }

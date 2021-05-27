@@ -81,6 +81,33 @@ namespace MonitoriaServicosApi.Repository.Repository
             return result;
         }
 
+        public IQueryable<LogErroServico> GetLogErroServico(string idServico)
+        {
+            var logsErro = from logErro in collectionProadv.AsQueryable()
+                           where logErro.ServicoId == idServico && !logErro.Resolvido
+                           group logErro by new
+                           {
+                               logErro.Message.Length,
+                               logErro.Resolvido,
+                               DataErro = new DateTime(logErro.DataErro.Year, logErro.DataErro.Month, logErro.DataErro.Day)
+                           }
+                           into grpLogErro
+                           select new LogErroServico
+                           {
+                               ServicoId = grpLogErro.First().ServicoId,
+                               Metodo = grpLogErro.First().Metodo,
+                               Message = grpLogErro.First().Message,
+                               Quantidade = grpLogErro.Count(),
+                               Resolvido = grpLogErro.First().Resolvido,
+                               DataErro = grpLogErro.Last().DataErro,
+                               DataResolucao = grpLogErro.First().DataResolucao
+                           };
+            
+
+
+           return logsErro;
+        }
+
         public bool SolucionarErrosServico(string idServico)
         {
             var update = Builders<LogErroServico>.Update
@@ -136,5 +163,7 @@ namespace MonitoriaServicosApi.Repository.Repository
             var result = collectionInt.UpdateMany(filter, update) ?? collectionInt.UpdateMany(filter, update);
             return result.IsAcknowledged && result.ModifiedCount > 0;
         }
+
+      
     }
 }

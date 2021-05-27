@@ -1,5 +1,6 @@
 ﻿using MonitoriaServicosApi.Models.Models;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace MonitoriaServicosApi.Repository.Repository.Interface
 {
@@ -16,5 +17,7 @@ namespace MonitoriaServicosApi.Repository.Repository.Interface
         long GetQtdErro(Servico servico);
 
         bool SolucionarErrosServico(string idServico);
+
+        IQueryable<LogErroServico> GetLogErroServico(string idServico);
     }
 }

@@ -31,6 +31,19 @@ namespace MonitoriaServicosApi.Controllers
             }
         }
 
+        [Route("GetLogErrosServicoPag/{idServico}/{pagina}")]
+        [HttpGet]
+        public ActionResult GetLogErrosServico(string idServico, int pagina)
+        {
+            try
+            {
+                return Ok(_logErroBusiness.GetLogErrosServicoPag(idServico, pagina));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
 
         [Route("AtualizaStatusLog")]
         [HttpPost]

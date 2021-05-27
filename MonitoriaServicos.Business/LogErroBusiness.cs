@@ -89,6 +89,24 @@ namespace MonitoriaServicosApi.Business
             }
         }
 
+        public List<dynamic> GetLogErrosServicoPag(string idServico, int pagina)
+        {
+            try
+            {
+                var queryLogsErro = _logErroRepository.GetLogErroServico(idServico);
+
+
+
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
+
+      
+
         public bool SolucionarErrosServico(string idServico)
         {
             try
