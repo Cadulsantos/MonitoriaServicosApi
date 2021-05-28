@@ -89,15 +89,31 @@ namespace MonitoriaServicosApi.Business
             }
         }
 
-        public List<dynamic> GetLogErrosServicoPag(string idServico, int pagina)
+        public List<dynamic> GetLogErrosServicoPag(string idServico, int pagina = 0)
         {
             try
             {
+                var objs = new List<dynamic>();
+
+                var tamanhoPagina = 10;
+
                 var queryLogsErro = _logErroRepository.GetLogErroServico(idServico);
+                var paginacaoErro = queryLogsErro.Skip(pagina * tamanhoPagina).Take(tamanhoPagina).ToList();
+                
+                
+                paginacaoErro.OrderByDescending(o => o.DataErro).ToList().ForEach(log => {
+                    objs.Add(new {
+                        servicoId = log.ServicoId,
+                        message = log.Message,
+                        resolvido = log.Resolvido,
+                        dataResolucao = log.Resolvido ? log.DataResolucao.Value.ToString("dd/MM/yyyy HH:mm") : "Pendente",
+                        quantidade = log.Quantidade,
+                        dataErro = log.DataErro.ToString("dd/MM/yyyy HH:mm"),
+                    });
+                });
 
 
-
-                return null;
+                return objs;
             }
             catch (Exception ex)
             {

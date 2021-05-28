@@ -88,7 +88,7 @@ namespace MonitoriaServicosApi.Repository.Repository
                            group logErro by new
                            {
                                logErro.Message.Length,
-                               logErro.Resolvido,
+                               //logErro.Resolvido,
                                DataErro = new DateTime(logErro.DataErro.Year, logErro.DataErro.Month, logErro.DataErro.Day)
                            }
                            into grpLogErro
@@ -102,8 +102,6 @@ namespace MonitoriaServicosApi.Repository.Repository
                                DataErro = grpLogErro.Last().DataErro,
                                DataResolucao = grpLogErro.First().DataResolucao
                            };
-            
-
 
            return logsErro;
         }
