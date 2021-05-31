@@ -32,9 +32,12 @@ namespace MonitoriaServicosApi.Business
                     Origem = logErro.origem
                 };
 
-                var result = log.Origem == OrigemServicoEnum.ProAdv.ToString()
-                    ? _logErroRepository.AtualizaStatusLogProAdv(log)
-                    : _logErroRepository.AtualizaStatusLogInt(log);
+                var result = _logErroRepository.AtualizaStatusLogProAdv(log);
+                    
+
+                //var result = log.Origem == OrigemServicoEnum.ProAdv.ToString()
+                //    ? _logErroRepository.AtualizaStatusLogProAdv(log)
+                //    : _logErroRepository.AtualizaStatusLogInt(log);
 
                 return result;
             }
@@ -89,7 +92,7 @@ namespace MonitoriaServicosApi.Business
             }
         }
 
-        public List<dynamic> GetLogErrosServicoPag(string idServico, int pagina = 0)
+        public List<dynamic> GetLogErrosServicoPag(string idServico, int pagina)
         {
             try
             {
@@ -98,7 +101,7 @@ namespace MonitoriaServicosApi.Business
                 var tamanhoPagina = 10;
 
                 var queryLogsErro = _logErroRepository.GetLogErroServico(idServico);
-                var paginacaoErro = queryLogsErro.OrderByDescending(o => o.DataErro).Skip(pagina * tamanhoPagina).Take(tamanhoPagina).ToList();
+                var paginacaoErro = queryLogsErro.OrderByDescending(o => o.DataErro).Skip((pagina - 1) * tamanhoPagina).Take(tamanhoPagina).ToList();
                 
                 
                 paginacaoErro.ToList().ForEach(log => {

@@ -16,7 +16,22 @@ namespace MonitoriaServicosApi.Repository.Repository
         public long GetQtdErro(Servico servico)
         {
 
-            return collectionProadv.CountDocuments(x => x.ServicoId == servico.Id && !x.Resolvido); ;
+            return collectionProadv.CountDocuments(x => x.ServicoId == servico.Id && !x.Resolvido);
+
+            //return collectionProadv.Aggregate().Match(x => x.ServicoId == servico.Id && !x.Resolvido)
+            //   .Project(p => new LogErroServico {
+            //   Message = p.Message,
+            //   Resolvido = p.Resolvido,
+            //   DataErro = new DateTime(p.DataErro.Year, p.DataErro.Month, p.DataErro.Day)
+            //   }) 
+            //   .ToList()
+            //   .GroupBy(g => new
+            //   {
+            //       g.Message,
+            //       g.Resolvido,
+            //       DataErro = new DateTime(g.DataErro.Year, g.DataErro.Month, g.DataErro.Day)
+            //       //group => new { group }
+            //   }).Count();
         }
 
         public List<LogErroServico> GetLogErroServicoProadv(string idServico)
