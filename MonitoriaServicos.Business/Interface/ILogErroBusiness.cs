@@ -14,5 +14,6 @@ namespace MonitoriaServicosApi.Business.Interface
         bool SolucionarErrosServico(string idServico);
 
         List<dynamic> GetLogErrosServicoPag(string idServico, int pagina);
+
     }
 }

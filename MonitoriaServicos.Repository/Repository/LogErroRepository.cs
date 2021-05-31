@@ -15,36 +15,12 @@ namespace MonitoriaServicosApi.Repository.Repository
 
         public long GetQtdErro(Servico servico)
         {
-            var result = new long();
 
-            if (servico.Origem == OrigemServicoEnum.ProAdv)
-                result = collectionProadv.CountDocuments(x => x.ServicoId == servico.Id
-                 && !x.Resolvido && x.DataErro > DateTime.Today.AddDays(-30));
-            else if (servico.Origem == OrigemServicoEnum.IntegracaoExterna)
-                result = collectionInt.CountDocuments(x => x.ServicoId == servico.Id
-                 && !x.Resolvido && x.DataErro > DateTime.Today.AddDays(-30));
-
-            return result;
+            return collectionProadv.CountDocuments(x => x.ServicoId == servico.Id && !x.Resolvido); ;
         }
 
         public List<LogErroServico> GetLogErroServicoProadv(string idServico)
         {
-            #region pagination
-
-            //int pageSize = 5;
-            //int page = 1;
-            //var filter = Builders<LogErroServico>.Filter.Where(x => x.ServicoId == idServico && x.DataErro > DateTime.Now.Date.AddDays(-30));
-
-            //var data = collectionProadv.Find(filter)
-            //    .SortByDescending(x => x.DataErro)
-            //    .Skip((page - 1) * pageSize)
-            //    .Limit(pageSize)
-            //    .ToList();
-
-            //var count = collectionProadv.CountDocuments(filter);
-
-            #endregion pagination
-
             //var result = collectionProadv.Aggregate()
             //    .Match(x => x.ServicoId == idServico && x.DataErro > DateTime.Now.Date.AddDays(-30))
             //    .Group(y => new { y.Metodo, y.Message, y.Resolvido, DataErro = new DateTime(y.DataErro.Year, y.DataErro.Month, y.DataErro.Day) },
@@ -162,6 +138,6 @@ namespace MonitoriaServicosApi.Repository.Repository
             return result.IsAcknowledged && result.ModifiedCount > 0;
         }
 
-      
+        
     }
 }

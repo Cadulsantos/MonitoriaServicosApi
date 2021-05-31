@@ -31,7 +31,7 @@ namespace MonitoriaServicosApi.Controllers
             }
         }
 
-        [Route("GetLogErrosServicoPag/{idServico}/{pagina}")]
+        [Route("GetLogErrosServicoPag")]
         [HttpGet]
         public ActionResult GetLogErrosServico(string idServico, int pagina)
         {
@@ -45,6 +45,7 @@ namespace MonitoriaServicosApi.Controllers
             }
         }
 
+        
         [Route("AtualizaStatusLog")]
         [HttpPost]
         public ActionResult AtualizaStatusLog(object logErro)

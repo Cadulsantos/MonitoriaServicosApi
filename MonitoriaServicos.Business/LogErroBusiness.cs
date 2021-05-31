@@ -98,10 +98,10 @@ namespace MonitoriaServicosApi.Business
                 var tamanhoPagina = 10;
 
                 var queryLogsErro = _logErroRepository.GetLogErroServico(idServico);
-                var paginacaoErro = queryLogsErro.Skip(pagina * tamanhoPagina).Take(tamanhoPagina).ToList();
+                var paginacaoErro = queryLogsErro.OrderByDescending(o => o.DataErro).Skip(pagina * tamanhoPagina).Take(tamanhoPagina).ToList();
                 
                 
-                paginacaoErro.OrderByDescending(o => o.DataErro).ToList().ForEach(log => {
+                paginacaoErro.ToList().ForEach(log => {
                     objs.Add(new {
                         servicoId = log.ServicoId,
                         message = log.Message,
@@ -121,7 +121,7 @@ namespace MonitoriaServicosApi.Business
             }
         }
 
-      
+       
 
         public bool SolucionarErrosServico(string idServico)
         {
