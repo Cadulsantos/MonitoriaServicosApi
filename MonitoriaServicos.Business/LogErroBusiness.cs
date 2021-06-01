@@ -124,7 +124,18 @@ namespace MonitoriaServicosApi.Business
             }
         }
 
-       
+
+        public long GetQtdErroGroup(string servicoId) 
+        {
+            try
+            {
+                return _logErroRepository.GetQtdErroGroup(servicoId);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+        }
 
         public bool SolucionarErrosServico(string idServico)
         {

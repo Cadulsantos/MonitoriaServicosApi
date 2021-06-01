@@ -17,22 +17,25 @@ namespace MonitoriaServicosApi.Repository.Repository
         {
 
             return collectionProadv.CountDocuments(x => x.ServicoId == servico.Id && !x.Resolvido);
-
-            //return collectionProadv.Aggregate().Match(x => x.ServicoId == servico.Id && !x.Resolvido)
-            //   .Project(p => new LogErroServico {
-            //   Message = p.Message,
-            //   Resolvido = p.Resolvido,
-            //   DataErro = new DateTime(p.DataErro.Year, p.DataErro.Month, p.DataErro.Day)
-            //   }) 
-            //   .ToList()
-            //   .GroupBy(g => new
-            //   {
-            //       g.Message,
-            //       g.Resolvido,
-            //       DataErro = new DateTime(g.DataErro.Year, g.DataErro.Month, g.DataErro.Day)
-            //       //group => new { group }
-            //   }).Count();
+          
         }
+
+        public long GetQtdErroGroup(string servicoId)
+        {
+
+            var result = collectionProadv.Aggregate()
+               .Match(x => x.ServicoId == servicoId && !x.Resolvido)
+               .Group(y => new { y.Metodo, y.Message, y.Resolvido, DataErro = new DateTime(y.DataErro.Year, y.DataErro.Month, y.DataErro.Day) },
+                g => new LogErroServico
+                {
+                    ServicoId = g.First().ServicoId
+                })
+               .ToList()
+               .Count();
+
+            return result;
+        }
+
 
         public List<LogErroServico> GetLogErroServicoProadv(string idServico)
         {
@@ -56,7 +59,7 @@ namespace MonitoriaServicosApi.Repository.Repository
             var result = collectionProadv.Aggregate()
                 .Match(x => x.ServicoId == idServico && x.DataErro > DateTime.Now.Date.AddDays(-30) && !x.Resolvido)
                 .ToList()
-                .GroupBy(key => new { /*key.Metodo,*/ key.Message, key.Resolvido, DataErro = new DateTime(key.DataErro.Year, key.DataErro.Month, key.DataErro.Day) })
+                .GroupBy(key => new { key.Message, key.Resolvido, DataErro = new DateTime(key.DataErro.Year, key.DataErro.Month, key.DataErro.Day) })
                 .Select(s => new LogErroServico
                 {
                     ServicoId = s.First().ServicoId,

@@ -15,5 +15,7 @@ namespace MonitoriaServicosApi.Business.Interface
 
         List<dynamic> GetLogErrosServicoPag(string idServico, int pagina);
 
+        long GetQtdErroGroup(string servicoId);
+
     }
 }

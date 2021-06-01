@@ -45,7 +45,20 @@ namespace MonitoriaServicosApi.Controllers
             }
         }
 
-        
+        [Route("GetQtdErroGroup")]
+        [HttpGet]
+        public ActionResult GetQtdErroGroup(string idServico)
+        {
+            try
+            {
+                return Ok(_logErroBusiness.GetQtdErroGroup(idServico));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
+
         [Route("AtualizaStatusLog")]
         [HttpPost]
         public ActionResult AtualizaStatusLog(object logErro)

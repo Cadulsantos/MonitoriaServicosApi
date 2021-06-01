@@ -16,6 +16,8 @@ namespace MonitoriaServicosApi.Repository.Repository.Interface
 
         long GetQtdErro(Servico servico);
 
+        long GetQtdErroGroup(string servicoId);
+
         bool SolucionarErrosServico(string idServico);
 
         IQueryable<LogErroServico> GetLogErroServico(string idServico);
