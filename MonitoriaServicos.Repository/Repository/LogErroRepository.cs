@@ -25,7 +25,7 @@ namespace MonitoriaServicosApi.Repository.Repository
 
             var result = collectionProadv.Aggregate()
                .Match(x => x.ServicoId == servicoId && !x.Resolvido)
-               .Group(y => new { y.Metodo, y.Message, y.Resolvido, DataErro = new DateTime(y.DataErro.Year, y.DataErro.Month, y.DataErro.Day) },
+               .Group(y => new { y.Message, DataErro = new DateTime(y.DataErro.Year, y.DataErro.Month, y.DataErro.Day) },
                 g => new LogErroServico
                 {
                     ServicoId = g.First().ServicoId
@@ -37,43 +37,7 @@ namespace MonitoriaServicosApi.Repository.Repository
         }
 
 
-        public List<LogErroServico> GetLogErroServicoProadv(string idServico)
-        {
-            //var result = collectionProadv.Aggregate()
-            //    .Match(x => x.ServicoId == idServico && x.DataErro > DateTime.Now.Date.AddDays(-30))
-            //    .Group(y => new { y.Metodo, y.Message, y.Resolvido, DataErro = new DateTime(y.DataErro.Year, y.DataErro.Month, y.DataErro.Day) },
-            //    g => new LogErroServico
-            //    {
-            //        ServicoId = g.First().ServicoId,
-            //        Metodo = g.First().Metodo,
-            //        Message = g.First().Message,
-            //        Quantidade = g.Count(),
-            //        Resolvido = g.First().Resolvido,
-            //        DataErro = g.Last().DataErro,
-            //        DataResolucao = g.First().DataResolucao
-            //    })
-            //    .SortByDescending(x => x.DataErro)/*.ThenBy(t => t.DataErro)*/
-            //    .Limit(1000)
-            //    .ToList();
-
-            var result = collectionProadv.Aggregate()
-                .Match(x => x.ServicoId == idServico && x.DataErro > DateTime.Now.Date.AddDays(-30) && !x.Resolvido)
-                .ToList()
-                .GroupBy(key => new { key.Message, key.Resolvido, DataErro = new DateTime(key.DataErro.Year, key.DataErro.Month, key.DataErro.Day) })
-                .Select(s => new LogErroServico
-                {
-                    ServicoId = s.First().ServicoId,
-                    Metodo = s.First().Metodo,
-                    Message = s.First().Message,
-                    Quantidade = s.Count(),
-                    Resolvido = s.First().Resolvido,
-                    DataErro = s.Last().DataErro,
-                    DataResolucao = s.First().DataResolucao
-                })
-                .OrderByDescending(o => o.DataErro)
-                .ToList();
-            return result;
-        }
+       
 
         public IQueryable<LogErroServico> GetLogErroServico(string idServico)
         {
@@ -81,7 +45,7 @@ namespace MonitoriaServicosApi.Repository.Repository
                            where logErro.ServicoId == idServico && !logErro.Resolvido
                            group logErro by new
                            {
-                               logErro.Message.Length,
+                               logErro.Message,
                                //logErro.Resolvido,
                                DataErro = new DateTime(logErro.DataErro.Year, logErro.DataErro.Month, logErro.DataErro.Day)
                            }
@@ -110,28 +74,6 @@ namespace MonitoriaServicosApi.Repository.Repository
 
            return result;
 
-        }
-
-        public List<LogErroServico> GetLogErroServicoIntegracaoBipBop(string idServico)
-        {
-            var result = collectionInt.Aggregate()
-                .Match(x => x.ServicoId == idServico && x.DataErro > DateTime.Now.Date.AddDays(-30))
-                .Group(y => new { y.Metodo, y.Message, y.Resolvido, DataErro = new DateTime(y.DataErro.Year, y.DataErro.Month, y.DataErro.Day) },
-                g => new LogErroServico
-                {
-                    ServicoId = g.First().ServicoId,
-                    Metodo = g.First().Metodo,
-                    Message = g.First().Message,
-                    Quantidade = g.Count(),
-                    Resolvido = g.First().Resolvido,
-                    DataErro = g.Last().DataErro,
-                    DataResolucao = g.First().DataResolucao
-                })
-                .Limit(10000)
-                .SortByDescending(x => x.DataErro)/*.ThenBy(t => t.DataErro)*/
-                .ToList();
-
-            return result;
         }
 
         public bool AtualizaStatusLogProAdv(LogErroServico logErro)

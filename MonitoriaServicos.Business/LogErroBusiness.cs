@@ -47,51 +47,6 @@ namespace MonitoriaServicosApi.Business
             }
         }
 
-        public List<dynamic> GetLogErrosServico(string idServico, string origem)
-        {
-            try
-            {
-                var logAgrupado = new List<LogErroServico>();
-
-                if (origem == OrigemServicoEnum.ProAdv.ToString())
-                    logAgrupado = _logErroRepository.GetLogErroServicoProadv(idServico);
-                else if (origem == OrigemServicoEnum.IntegracaoExterna.ToString())
-                    logAgrupado = _logErroRepository.GetLogErroServicoIntegracaoBipBop(idServico);
-                var objs = new List<dynamic>();
-
-                //Parallel.ForEach(logAgrupado, new ParallelOptions { MaxDegreeOfParallelism = 25 }, log =>
-                //{
-                foreach (var log in logAgrupado)
-                {
-                    try
-                    {
-                        dynamic obj = new
-                        {
-                            servicoId = log.ServicoId,
-                            message = log.Message,
-                            resolvido = log.Resolvido,
-                            dataResolucao = log.Resolvido ? log.DataResolucao.Value.ToString("dd/MM/yyyy HH:mm") : "Pendente",
-                            quantidade = log.Quantidade,
-                            dataErro = log.DataErro.ToString("dd/MM/yyyy HH:mm"),
-                            origem = origem
-                        };
-                        objs.Add(obj);
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new Exception(ex.Message + log.ServicoId);
-                    }
-                }
-                //});
-
-                return objs;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-        }
-
         public List<dynamic> GetLogErrosServicoPag(string idServico, int pagina)
         {
             try
@@ -101,6 +56,7 @@ namespace MonitoriaServicosApi.Business
                 var tamanhoPagina = 10;
 
                 var queryLogsErro = _logErroRepository.GetLogErroServico(idServico);
+                var teste = queryLogsErro.ToList();
                 var paginacaoErro = queryLogsErro.OrderByDescending(o => o.DataErro).Skip((pagina - 1) * tamanhoPagina).Take(tamanhoPagina).ToList();
                 
                 

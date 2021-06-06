@@ -17,20 +17,6 @@ namespace MonitoriaServicosApi.Controllers
             _logErroBusiness = new LogErroBusiness();
         }
 
-        [Route("GetLogErrosServico/{idServico}/{origem}")]
-        [HttpGet]
-        public ActionResult GetLogErrosServico(string idServico, string origem)
-        {
-            try
-            {
-                return Ok(_logErroBusiness.GetLogErrosServico(idServico, origem));
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
-        }
-
         [Route("GetLogErrosServicoPag")]
         [HttpGet]
         public ActionResult GetLogErrosServico(string idServico, int pagina)

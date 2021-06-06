@@ -6,10 +6,6 @@ namespace MonitoriaServicosApi.Repository.Repository.Interface
 {
     public interface ILogErroRepository
     {
-        List<LogErroServico> GetLogErroServicoProadv(string idServico);
-
-        List<LogErroServico> GetLogErroServicoIntegracaoBipBop(string idServico);
-
         bool AtualizaStatusLogProAdv(LogErroServico logErro);
 
         bool AtualizaStatusLogInt(LogErroServico logErro);
