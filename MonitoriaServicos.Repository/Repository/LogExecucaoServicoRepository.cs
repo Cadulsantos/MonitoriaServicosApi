@@ -35,5 +35,10 @@ namespace MonitoriaServicosApi.Repository.Repository
             return logsExec;
                            
         }
+
+        public long GetQtdLogsExec(string idServico)
+        {
+            return collection.CountDocuments(x => x.idServico == idServico);
+        }
     }
 }

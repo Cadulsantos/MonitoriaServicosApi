@@ -60,5 +60,9 @@ namespace MonitoriaServicos.Business
             return objs/*.OrderByDescending(x => x.dataInicio).ToList()*/;
         }
 
+        public long GetQtdLogsExec(string idServico)
+        {
+            return _logExecucaoServicoRepository.GetQtdLogsExec(idServico);
+        }
     }
 }

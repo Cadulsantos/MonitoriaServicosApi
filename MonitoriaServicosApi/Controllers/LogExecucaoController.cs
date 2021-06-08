@@ -33,5 +33,19 @@ namespace MonitoriaServicos.Api.Controllers
             }
         }
 
+        [Route("GetQtdLogsExec")]
+        [HttpGet]
+        public ActionResult GetQtdLogsExec(string idServico)
+        {
+            try
+            {
+                return Ok(_logExecucaoBusiness.GetQtdLogsExec(idServico));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
+
     }
 }
