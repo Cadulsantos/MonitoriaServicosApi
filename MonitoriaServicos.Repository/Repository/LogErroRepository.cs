@@ -37,8 +37,6 @@ namespace MonitoriaServicosApi.Repository.Repository
         }
 
 
-       
-
         public IQueryable<LogErroServico> GetLogErroServico(string idServico)
         {
             var logsErro = from logErro in collectionProadv.AsQueryable()

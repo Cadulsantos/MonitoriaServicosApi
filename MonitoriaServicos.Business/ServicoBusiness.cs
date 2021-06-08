@@ -36,34 +36,7 @@ namespace MonitoriaServicosApi.Business
             return _servicoRepository.AtualizaServico(servico);
         }
 
-        public List<dynamic> GetLogsExecucaoServico(string idServico)
-        {
-            var servicos = _logExecucaoServicoRepository.GetLogsExecucaoServicoById(idServico);
-            var objs = new List<dynamic>();
-
-            foreach (var servico in servicos)
-            {
-                try
-                {
-                    dynamic obj = new
-                    {
-                        servicoId = servico.idServico,
-                        nomeServico = servico.NomeServico,
-                        dataInicio = servico.DataInicio.ToString(),
-                        dataFim = servico.DataFim == null ? "Agora" : servico.DataFim.Value.ToString(),
-                        tempoExecucao = servico.DataFim == null ? "Em Execução" : servico.TempoExecucao
-                    };
-                    objs.Add(obj);
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(ex.Message + servico.Id);
-                }
-            }
-
-            return objs.OrderByDescending(x => x.dataInicio).ToList();
-        }
-
+        
         public List<dynamic> GetServicos()
         {
             var servicos = _servicoRepository.GetServicos();

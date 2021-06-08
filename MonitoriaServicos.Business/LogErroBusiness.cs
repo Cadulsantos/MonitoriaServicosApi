@@ -56,11 +56,9 @@ namespace MonitoriaServicosApi.Business
                 var tamanhoPagina = 10;
 
                 var queryLogsErro = _logErroRepository.GetLogErroServico(idServico);
-                var teste = queryLogsErro.ToList();
                 var paginacaoErro = queryLogsErro.OrderByDescending(o => o.DataErro).Skip((pagina - 1) * tamanhoPagina).Take(tamanhoPagina).ToList();
                 
-                
-                paginacaoErro.ToList().ForEach(log => {
+                paginacaoErro.ForEach(log => {
                     objs.Add(new {
                         servicoId = log.ServicoId,
                         message = log.Message,
@@ -70,7 +68,6 @@ namespace MonitoriaServicosApi.Business
                         dataErro = log.DataErro.ToString("dd/MM/yyyy HH:mm"),
                     });
                 });
-
 
                 return objs;
             }

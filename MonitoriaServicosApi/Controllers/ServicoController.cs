@@ -61,18 +61,5 @@ namespace MonitoriaServicosApi.Controllers
             }
         }
 
-        [Route("GetLogsExecucaoServico/{idServico}")]
-        [HttpGet]
-        public ActionResult GetLogsExecucaoServico(string idServico)
-        {
-            try
-            {
-                return Ok(_servicoBusiness.GetLogsExecucaoServico(idServico));
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, ex);
-            }
-        }
     }
 }

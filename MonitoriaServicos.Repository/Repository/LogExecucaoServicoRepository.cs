@@ -22,9 +22,18 @@ namespace MonitoriaServicosApi.Repository.Repository
         public List<LogExecucaoServico> GetLogsExecucaoServicoById(string idServico)
         {
             var teste = _competencia.Date.ToString();
-            var result = collection.Find(x => x.idServico == idServico && x.DataInicio >= _competencia).ToList();
+            var result = collection.Find(x => x.idServico == idServico /*&& x.DataInicio >= _competencia*/).ToList();
             return result;
         }
 
+        public IQueryable<LogExecucaoServico> GetLogExecucao(string idServico)
+        {
+            var logsExec = from logExec in collection.AsQueryable()
+                           where logExec.idServico == idServico
+                           select logExec;
+
+            return logsExec;
+                           
+        }
     }
 }
