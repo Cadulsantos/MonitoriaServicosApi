@@ -1,4 +1,5 @@
 ﻿using MongoDB.Driver;
+using MonitoriaServicos.Models.ViewModels;
 using MonitoriaServicosApi.Models.Models;
 using MonitoriaServicosApi.Repository.Repository.Interface;
 using System;
@@ -27,7 +28,7 @@ namespace MonitoriaServicosApi.Repository.Repository
 
         public List<Servico> GetServicos()
         {
-            //GetServicos2();
+            GetServicos2();
             return collection.Find("{}").ToList();
         }
 
@@ -38,28 +39,44 @@ namespace MonitoriaServicosApi.Repository.Repository
                 var data = new DateTime(DateTime.Today.Year, DateTime.Today.Month, 1);
 
                 var listServico = (from s in collection.AsQueryable()
-                                   join logErro in collectioLogErro.AsQueryable() on s.Id equals logErro.Servico into erroCount
-                                   join logExec in collectionLogExecucao.AsQueryable() on s.Id equals logExec.idServico into ultimaExec
+                                   //join logErro in collectioLogErro.AsQueryable() on s.Id equals logErro.ServicoId into erros
+                                   //join logExec in collectionLogExecucao.AsQueryable() on s.Id equals logExec.idServico into ultimaExec
                                    //join logErro in collectioLogErro.AsQueryable().Where(x => !x.Resolvido && x.DataErro > DateTime.Today.AddDays(-30)) on s.Id equals logErro.Servico into erroCount
                                    //join logExec in collectionLogExecucao.AsQueryable().Where(x => x.DataInicio > data).OrderByDescending(o => o.DataInicio) on s.Id equals logExec.idServico into ultimaExec
-                                   select new
+                                   select new ServicoViewModel
                                    {
-                                       id = s.Id,
-                                       nome = s.Nome,
-                                       nomeArgument = s.NomeArgument,
-                                       ativo = s.Ativo,
-                                       descricao = s.Descricao,
-                                       periodicidade = s.Periodicidade,
-                                       data = ultimaExec.ToList().FirstOrDefault().DataInicio != null ? ultimaExec.ToList().FirstOrDefault().DataInicio.Date : DateTime.MinValue,
-                                       dataInicio = ultimaExec.ToList().FirstOrDefault().DataInicio != null ? ultimaExec.ToList().FirstOrDefault().DataInicio.Date.ToString() : "Serviço não Executado",
-                                       dataFim = ultimaExec.ToList().FirstOrDefault().DataFim != null ? ultimaExec.ToList().FirstOrDefault().DataFim.ToString() : "",
-                                       origem = s.Origem.ToString(),
-                                       quantidadeErros = erroCount.Count().ToString(),
-                                       erro = erroCount.Count() > 0
-                                   })
+                                       Id = s.Id,
+                                       Nome = s.Nome,
+                                       NomeArgument = s.NomeArgument,
+                                       Ativo = s.Ativo,
+                                       Descricao = s.Descricao,
+                                       Periodicidade = s.Periodicidade,
+                                       //Data = ultimaExec.ToList().FirstOrDefault().DataInicio != null ? ultimaExec.ToList().FirstOrDefault().DataInicio.Date : DateTime.MinValue,
+                                       //DataInicio = ultimaExec.ToList().FirstOrDefault().DataInicio != null ? ultimaExec.ToList().FirstOrDefault().DataInicio.Date.ToString() : "Serviço não Executado",
+                                       //DataFim = ultimaExec.ToList().FirstOrDefault().DataFim != null ? ultimaExec.ToList().FirstOrDefault().DataFim.ToString() : "",
+                                       Origem = s.Origem,
+                                       //QuantidadeErros = erros.Count(),
+                                       //Erro = erros.Count() > 0
+                                       //LogsErro = new LogErroServico {
+                                       //  Message = erros.First().Message
+                                       //}
+                                   }
+                                   )
                                    .ToList()
-                                   .OrderByDescending(o => o.data)
+                                   .OrderByDescending(o => o.QuantidadeErros)
                                    .ToList();
+
+                //var listSevicoErro = (
+                //    from servico in listServico
+                //    join erro in collectioLogErro.AsQueryable() on servico.Id equals erro into errosServico
+                //    select new ServicoViewModel
+                //    {
+                //      LogsErro = errosServico
+                //    }
+                //    into emailGroup
+                //    where emailGroup.ListlogEmail.Count() == 0
+                //    select emailGroup).ToList();
+                    
 
                 
             }
