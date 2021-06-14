@@ -42,6 +42,8 @@ namespace MonitoriaServicosApi.Business
             var servicos = _servicoRepository.GetServicos();
             var objs = new List<dynamic>();
 
+            var errosServico = _logErroRepository.GetQtdLogsErro();
+
             Parallel.ForEach(servicos,
                 new ParallelOptions { MaxDegreeOfParallelism = 25 },
                 servico =>

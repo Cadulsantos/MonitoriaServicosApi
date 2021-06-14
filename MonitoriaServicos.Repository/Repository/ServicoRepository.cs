@@ -28,7 +28,7 @@ namespace MonitoriaServicosApi.Repository.Repository
 
         public List<Servico> GetServicos()
         {
-            GetServicos2();
+            //GetServicos2();
             return collection.Find("{}").ToList();
         }
 
@@ -66,19 +66,19 @@ namespace MonitoriaServicosApi.Repository.Repository
                                    .OrderByDescending(o => o.QuantidadeErros)
                                    .ToList();
 
-                //var listSevicoErro = (
-                //    from servico in listServico
-                //    join erro in collectioLogErro.AsQueryable() on servico.Id equals erro into errosServico
-                //    select new ServicoViewModel
-                //    {
-                //      LogsErro = errosServico
-                //    }
-                //    into emailGroup
-                //    where emailGroup.ListlogEmail.Count() == 0
-                //    select emailGroup).ToList();
-                    
+                var listSevicoErro = (
+                    from servico in listServico
+                    join erro in collectioLogErro.AsQueryable() on servico.Id equals erro.ServicoId into errosServico
+                    select new ServicoViewModel
+                    {
+                        LogsErro = errosServico
+                    }
+                    into emailGroup
+                    where emailGroup.LogsErro.Count() == 0
+                    select emailGroup).ToList();
 
-                
+
+
             }
             catch (Exception ex)
             {

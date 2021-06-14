@@ -17,6 +17,7 @@ namespace MonitoriaServicosApi.Repository.Repository.Interface
         bool SolucionarErrosServico(string idServico);
 
         IQueryable<LogErroServico> GetLogErroServico(string idServico);
-        
+
+        List<dynamic> GetQtdLogsErro();
     }
 }

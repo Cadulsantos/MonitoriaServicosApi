@@ -20,6 +20,24 @@ namespace MonitoriaServicosApi.Repository.Repository
           
         }
 
+        public List<dynamic> GetQtdLogsErro()
+        {        
+            List<dynamic> objs = new List<dynamic>();
+
+            var result = collectionProadv.Aggregate()
+               .Match(x => !x.Resolvido)
+               .Project(p => new LogErroServico { ServicoId = p.ServicoId } )
+               .Group(y => y.ServicoId,
+                g => new
+                {
+                    ServicoId = g.Key,
+                    Count = g.Count()
+                })
+               .ToList();
+
+            return objs;
+        }
+
         public long GetQtdErroGroup(string servicoId)
         {
 
@@ -96,6 +114,6 @@ namespace MonitoriaServicosApi.Repository.Repository
             return result.IsAcknowledged && result.ModifiedCount > 0;
         }
 
-        
+       
     }
 }
