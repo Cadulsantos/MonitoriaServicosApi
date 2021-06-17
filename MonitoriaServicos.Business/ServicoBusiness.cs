@@ -42,32 +42,41 @@ namespace MonitoriaServicosApi.Business
             var servicos = _servicoRepository.GetServicos();
             var objs = new List<dynamic>();
 
-            var errosServico = _logErroRepository.GetQtdLogsErro();
+            var errosServicos = _logErroRepository.GetQtdLogsErro();
+            var logsExecServicos = _logExecucaoServicoRepository.GetUltimasExecucoesServicos();
 
-            Parallel.ForEach(servicos,
-                new ParallelOptions { MaxDegreeOfParallelism = 25 },
-                servico =>
-                {
-                    //foreach (var servico in servicos)
-                    //{
-                    try
+            //Parallel.ForEach(servicos,
+            //    new ParallelOptions { MaxDegreeOfParallelism = 25 },
+            //    servico =>
+            //    {
+            foreach (var servico in servicos)
+            {
+                try
                     {
-                        var logExecucao = _logExecucaoServicoRepository.GetLogUltimaExecucaoServico(servico.Id);
-                        var qtdErro = _logErroRepository.GetQtdErro(servico);
 
-                        dynamic obj = new
-                        {
-                            id = servico.Id,
-                            nome = servico.Nome,
-                            nomeArgument = servico.NomeArgument,
-                            ativo = servico.Ativo,
-                            descricao = servico.Descricao,
-                            periodicidade = servico.Periodicidade,
-                            data = logExecucao != null && logExecucao.DataInicio.Date != null ? logExecucao.DataInicio : DateTime.MinValue,
-                            dataInicio = logExecucao != null && logExecucao.DataInicio != null ? logExecucao.DataInicio.ToString() : "Serviço não Executado",
-                            dataFim = logExecucao != null && logExecucao.DataFim != null ? logExecucao.DataFim.ToString() : "",
-                            origem = servico.Origem.ToString(),
-                            quantidadeErros = qtdErro.ToString(),
+                    //var logExecucao = _logExecucaoServicoRepository.GetLogUltimaExecucaoServico(servico.Id);
+                    var qtdErro = _logErroRepository.GetQtdErro(servico);
+
+                    var logExecucao = logsExecServicos.FirstOrDefault(x => x.idServico == servico.Id);
+                    //long qtdErro = errosServicos.FirstOrDefault(c => c.ServicoId == servico.Id).Count ?? 0;
+
+                    if (qtdErro > 0)
+                        Console.WriteLine("");
+
+                    dynamic obj = new
+                    {
+                        id = servico.Id,
+                        nome = servico.Nome,
+                        nomeArgument = servico.NomeArgument,
+                        ativo = servico.Ativo,
+                        descricao = servico.Descricao,
+                        periodicidade = servico.Periodicidade,
+                        data = logExecucao != null && logExecucao.DataInicio.Date != null ? logExecucao.DataInicio : DateTime.MinValue,
+                        dataInicio = logExecucao != null && logExecucao.DataInicio != null ? logExecucao.DataInicio.ToString() : "Serviço não Executado",
+                        dataFim = logExecucao != null && logExecucao.DataFim != null ? logExecucao.DataFim.ToString() : "",
+                        origem = servico.Origem.ToString(),
+                        //quantidadeErros = qtdErro.ToString(),
+                        quantidadeErros = qtdErro,
                             erro = qtdErro > 0 ? true : false
                         };
                         objs.Add(obj);
@@ -76,8 +85,8 @@ namespace MonitoriaServicosApi.Business
                     {
                         throw new Exception(ex.Message + servico.Id);
                     }
-                    //}
-                });
+            }
+            //});
 
             return objs.OrderByDescending(x => x.data).ToList();
         }

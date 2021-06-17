@@ -27,15 +27,15 @@ namespace MonitoriaServicosApi.Repository.Repository
             var result = collectionProadv.Aggregate()
                .Match(x => !x.Resolvido)
                .Project(p => new LogErroServico { ServicoId = p.ServicoId } )
-               .Group(y => y.ServicoId,
-                g => new
-                {
-                    ServicoId = g.Key,
-                    Count = g.Count()
-                })
+               //.Group(y => y.ServicoId,
+               // g => new
+               // {
+               //     ServicoId = g.Key,
+               //     Count = g.Count()
+               // })
                .ToList();
 
-            return objs;
+            return null;
         }
 
         public long GetQtdErroGroup(string servicoId)

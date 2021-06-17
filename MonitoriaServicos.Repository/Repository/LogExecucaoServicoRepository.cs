@@ -19,6 +19,22 @@ namespace MonitoriaServicosApi.Repository.Repository
             return result.FirstOrDefault();
         }
 
+        public List<LogExecucaoServico> GetUltimasExecucoesServicos()
+        {
+            var result = collection.Aggregate()
+                .Match(x => x.DataInicio > _competencia)
+                .SortByDescending(s => s.DataInicio)
+                .Group(p => p.idServico, g => new LogExecucaoServico {
+                Id = g.Key,
+                DataInicio = g.First().DataInicio,
+                DataFim = g.First().DataFim,
+
+                })
+                .ToList();
+
+            return result;
+        }
+
         public List<LogExecucaoServico> GetLogsExecucaoServicoById(string idServico)
         {
             var teste = _competencia.Date.ToString();

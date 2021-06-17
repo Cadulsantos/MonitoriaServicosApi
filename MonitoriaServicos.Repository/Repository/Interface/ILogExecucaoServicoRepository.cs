@@ -13,5 +13,7 @@ namespace MonitoriaServicosApi.Repository.Repository.Interface
         IQueryable<LogExecucaoServico> GetLogExecucao(string idServico);
 
         long GetQtdLogsExec(string idServico);
+
+        List<LogExecucaoServico> GetUltimasExecucoesServicos();
     }
 }
