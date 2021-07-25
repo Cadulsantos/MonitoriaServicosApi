@@ -1,6 +1,7 @@
 ﻿using MongoDB.Bson;
 using MongoDB.Bson.Serialization.Attributes;
 using MonitoriaServicosApi.Models.Models.Enum;
+using System.Collections.Generic;
 
 namespace MonitoriaServicosApi.Models.Models
 {
@@ -29,5 +30,7 @@ namespace MonitoriaServicosApi.Models.Models
         [BsonElement("origem")]
         public OrigemServicoEnum Origem { get; set; }
 
+        [BsonElement("tags")]
+        public List<string> Tags { get; set; }
     }
 }

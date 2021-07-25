@@ -15,9 +15,7 @@ namespace MonitoriaServicosApi.Repository.Repository
 
         public long GetQtdErro(Servico servico)
         {
-
             return collectionProadv.CountDocuments(x => x.ServicoId == servico.Id && !x.Resolvido);
-          
         }
 
         public List<dynamic> GetQtdLogsErro()

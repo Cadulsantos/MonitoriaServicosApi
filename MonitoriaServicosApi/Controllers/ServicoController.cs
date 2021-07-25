@@ -38,7 +38,22 @@ namespace MonitoriaServicosApi.Controllers
             try
             {
                 dynamic filtro = JsonConvert.DeserializeObject<object>(filtroServico.ToString());
-                return Ok(_servicoBusiness.GetServicosFiltro(filtro));
+                return Ok(_servicoBusiness.GetServicosFiltro(filtroServico));
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, ex);
+            }
+        }
+
+        [Route("GetTagsServico")]
+        [HttpGet]
+        public ActionResult GetTagsServico()
+        {
+            try
+            {
+                
+                return Ok(_servicoBusiness.GetTagsServico());
             }
             catch (Exception ex)
             {

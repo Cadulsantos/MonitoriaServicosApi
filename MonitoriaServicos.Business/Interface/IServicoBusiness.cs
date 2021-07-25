@@ -12,5 +12,7 @@ namespace  MonitoriaServicosApi.Business.Interface
         bool AtualizaServico(dynamic informacoes);
 
         List<dynamic> GetServicosFiltro(dynamic filtroServico);
+
+        dynamic GetTagsServico();
     }
 }

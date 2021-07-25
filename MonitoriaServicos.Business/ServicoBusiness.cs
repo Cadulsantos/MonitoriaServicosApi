@@ -42,51 +42,51 @@ namespace MonitoriaServicosApi.Business
             var servicos = _servicoRepository.GetServicos();
             var objs = new List<dynamic>();
 
-            var errosServicos = _logErroRepository.GetQtdLogsErro();
-            var logsExecServicos = _logExecucaoServicoRepository.GetUltimasExecucoesServicos();
+            //var errosServicos = _logErroRepository.GetQtdLogsErro();
+            //var logsExecServicos = _logExecucaoServicoRepository.GetUltimasExecucoesServicos();
 
-            //Parallel.ForEach(servicos,
-            //    new ParallelOptions { MaxDegreeOfParallelism = 25 },
-            //    servico =>
-            //    {
-            foreach (var servico in servicos)
-            {
-                try
+            Parallel.ForEach(servicos,
+                new ParallelOptions { MaxDegreeOfParallelism = 25 },
+                servico =>
+                {
+                    //foreach (var servico in servicos)
+                    //{
+                    try
                     {
+                        //var logExecucao = logsExecServicos.FirstOrDefault(x => x.idServico == servico.Id);
+                        //long qtdErro = errosServicos.FirstOrDefault(c => c.ServicoId == servico.Id).Count ?? 0;
 
-                    //var logExecucao = _logExecucaoServicoRepository.GetLogUltimaExecucaoServico(servico.Id);
-                    var qtdErro = _logErroRepository.GetQtdErro(servico);
+                        var logExecucao = _logExecucaoServicoRepository.GetLogUltimaExecucaoServico(servico.Id);
+                        var qtdErro = _logErroRepository.GetQtdErro(servico);
 
-                    var logExecucao = logsExecServicos.FirstOrDefault(x => x.idServico == servico.Id);
-                    //long qtdErro = errosServicos.FirstOrDefault(c => c.ServicoId == servico.Id).Count ?? 0;
-
-                    if (qtdErro > 0)
+                        if (qtdErro > 0)
                         Console.WriteLine("");
 
-                    dynamic obj = new
-                    {
-                        id = servico.Id,
-                        nome = servico.Nome,
-                        nomeArgument = servico.NomeArgument,
-                        ativo = servico.Ativo,
-                        descricao = servico.Descricao,
-                        periodicidade = servico.Periodicidade,
-                        data = logExecucao != null && logExecucao.DataInicio.Date != null ? logExecucao.DataInicio : DateTime.MinValue,
-                        dataInicio = logExecucao != null && logExecucao.DataInicio != null ? logExecucao.DataInicio.ToString() : "Serviço não Executado",
-                        dataFim = logExecucao != null && logExecucao.DataFim != null ? logExecucao.DataFim.ToString() : "",
-                        origem = servico.Origem.ToString(),
-                        //quantidadeErros = qtdErro.ToString(),
-                        quantidadeErros = qtdErro,
-                            erro = qtdErro > 0 ? true : false
+                        dynamic obj = new
+                        {
+                            id = servico.Id,
+                            nome = servico.Nome,
+                            nomeArgument = servico.NomeArgument,
+                            ativo = servico.Ativo,
+                            descricao = servico.Descricao,
+                            periodicidade = servico.Periodicidade,
+                            data = logExecucao != null && logExecucao.DataInicio.Date != null ? logExecucao.DataInicio : DateTime.MinValue,
+                            dataInicio = logExecucao != null && logExecucao.DataInicio != null ? logExecucao.DataInicio.ToString() : "Serviço não Executado",
+                            dataFim = logExecucao != null && logExecucao.DataFim != null ? logExecucao.DataFim.ToString() : "",
+                            origem = servico.Origem.ToString(),
+                            quantidadeErros = qtdErro,
+                            erro = qtdErro > 0 ? true : false,
+                            tags = servico.Tags
                         };
+
                         objs.Add(obj);
                     }
                     catch (Exception ex)
                     {
                         throw new Exception(ex.Message + servico.Id);
                     }
-            }
-            //});
+                    //}
+                });
 
             return objs.OrderByDescending(x => x.data).ToList();
         }
@@ -95,66 +95,124 @@ namespace MonitoriaServicosApi.Business
         {
             var objs = new List<dynamic>();
 
-            var filtro = Builders<Servico>.Filter;
-
-            var result = filtro.Where(x => x.Id != null);
-
-            if (filtroServico.nomeArgument != null && filtroServico.nomeArgument != "")
+            try
             {
-                string nome = Convert.ToString(filtroServico.nomeArgument);
-                result &= filtro.Where(x => x.NomeArgument.ToLower().Contains(nome.ToLower()));
-            }
+                var filtro = Builders<Servico>.Filter;
 
-            if (filtroServico.ativo != null)
-            {
-                bool ativo = Convert.ToBoolean(filtroServico.ativo);
-                result &= filtro.Where(x => x.Ativo == ativo);
-            }
+                var result = filtro.Where(x => x.Id != null);
 
-            var servicos = _servicoRepository.GetServicosByExpression(result);
-
-            //Parallel.ForEach(servicos,
-            //    new ParallelOptions { MaxDegreeOfParallelism = 25 },
-            //    servico =>
-            //    {
-            foreach (var servico in servicos)
-            {
-                try
+                if (filtroServico.nomeArgument != null && filtroServico.nomeArgument != "")
                 {
-                    var logExecucao = _logExecucaoServicoRepository.GetLogUltimaExecucaoServico(servico.Id);
-                    var qtdErro = _logErroRepository.GetQtdErro(servico);
+                    string nome = Convert.ToString(filtroServico.nomeArgument);
+                    result &= filtro.Where(x => x.NomeArgument.ToLower().Contains(nome.ToLower()));
+                }
 
-                    objs.Add(new
+                if (filtroServico.ativo != null)
+                {
+                    bool ativo = Convert.ToBoolean(filtroServico.ativo);
+                    result &= filtro.Where(x => x.Ativo == ativo);
+                }
+
+                if (filtroServico.tags != null)
+                {
+                    var tags = new List<string>();
+                    foreach (var item in filtroServico.tags)
                     {
-                        id = servico.Id,
-                        nome = servico.Nome,
-                        nomeArgument = servico.NomeArgument,
-                        ativo = servico.Ativo,
-                        descricao = servico.Descricao,
-                        periodicidade = servico.Periodicidade,
-                        data = logExecucao != null && logExecucao.DataInicio.Date != null ? logExecucao.DataInicio : DateTime.MinValue,
-                        dataInicio = logExecucao != null && logExecucao.DataInicio != null ? logExecucao.DataInicio.ToString() : "Serviço não Executado",
-                        dataFim = logExecucao != null && logExecucao.DataFim != null ? logExecucao.DataFim.ToString() : "",
-                        origem = servico.Origem.ToString(),
-                        quantidadeErros = qtdErro.ToString(),
-                        erro = qtdErro > 0 ? true : false
-                    });
-                    //objs.Add(obj);
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception(ex.Message + servico.Id);
-                }
-            }
-            //});
+                        tags.Add(item.ToString());
+                        //string tag = item.ToString();
+                    }
 
-            if (filtroServico.erro != null)
+                    result &= filtro.AnyIn(x => x.Tags, tags);
+
+
+
+                    //result &= filtro.Where(x => tags.Contains(tags));
+                }
+
+                var servicos = _servicoRepository.GetServicosByExpression(result);
+
+                //Parallel.ForEach(servicos,
+                //    new ParallelOptions { MaxDegreeOfParallelism = 25 },
+                //    servico =>
+                //    {
+                foreach (var servico in servicos)
+                {
+                    try
+                    {
+                        var logExecucao = _logExecucaoServicoRepository.GetLogUltimaExecucaoServico(servico.Id);
+                        var qtdErro = _logErroRepository.GetQtdErro(servico);
+
+                        objs.Add(new
+                        {
+                            id = servico.Id,
+                            nome = servico.Nome,
+                            nomeArgument = servico.NomeArgument,
+                            ativo = servico.Ativo,
+                            descricao = servico.Descricao,
+                            periodicidade = servico.Periodicidade,
+                            data = logExecucao != null && logExecucao.DataInicio.Date != null ? logExecucao.DataInicio : DateTime.MinValue,
+                            dataInicio = logExecucao != null && logExecucao.DataInicio != null ? logExecucao.DataInicio.ToString() : "Serviço não Executado",
+                            dataFim = logExecucao != null && logExecucao.DataFim != null ? logExecucao.DataFim.ToString() : "",
+                            origem = servico.Origem.ToString(),
+                            quantidadeErros = qtdErro.ToString(),
+                            erro = qtdErro > 0 ? true : false,
+                            tags = servico.Tags
+                        });
+                        //objs.Add(obj);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw new Exception(ex.Message + servico.Id);
+                    }
+                }
+                //});
+
+                if (filtroServico.erro != null)
+                {
+                    bool erro = Convert.ToBoolean(filtroServico.erro);
+                    objs = objs.Where(x => x.erro == erro).ToList();
+                }
+
+                //if (filtroServico.tags != null)
+                //{
+                //    var tags = new List<string>();
+                //    foreach (var item in filtroServico.tags)
+                //    {
+                //        tags.Add(item.ToString());
+                //    }
+
+                //    objs = objs.Where(x => x.tags.Intersect(tags).Any()).ToList();
+
+                //    //result &= filtro.Where(x => x.Tags.Intersect(tags).Any());
+                //}
+            }
+            catch (Exception ex )
             {
-                bool erro = Convert.ToBoolean(filtroServico.erro);
-                objs = objs.Where(x => x.erro == erro).ToList();
+                Console.WriteLine(ex.Message);
             }
 
             return objs.OrderByDescending(x => x.data).ToList();
+        }
+
+        public dynamic GetTagsServico()
+        {
+            var tags = new List<string>();
+
+            _servicoRepository.GetServicosByExpression(Builders<Servico>.Filter
+                .Where(x => x.Tags.Any()))
+                .Select(s => s.Tags)
+                .ToList()
+                .ForEach(f => {
+                    tags.AddRange(f);
+                });
+
+            tags = tags.Distinct().ToList();
+
+            var obj = new {
+                tags = tags
+            };
+
+            return obj;
         }
     }
 }
