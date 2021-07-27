@@ -119,17 +119,13 @@ namespace MonitoriaServicosApi.Business
                     foreach (var item in filtroServico.tags)
                     {
                         tags.Add(item.ToString());
-                        //string tag = item.ToString();
                     }
 
                     result &= filtro.AnyIn(x => x.Tags, tags);
-
-
-
-                    //result &= filtro.Where(x => tags.Contains(tags));
                 }
 
                 var servicos = _servicoRepository.GetServicosByExpression(result);
+                //var errosServico = _logErroRepository.GetQtdErrosServico();
 
                 //Parallel.ForEach(servicos,
                 //    new ParallelOptions { MaxDegreeOfParallelism = 25 },
@@ -141,6 +137,7 @@ namespace MonitoriaServicosApi.Business
                     {
                         var logExecucao = _logExecucaoServicoRepository.GetLogUltimaExecucaoServico(servico.Id);
                         var qtdErro = _logErroRepository.GetQtdErro(servico);
+                        //var erros = errosServico.Where(x => x.Id == servico.Id).FirstOrDefault();
 
                         objs.Add(new
                         {
@@ -156,9 +153,10 @@ namespace MonitoriaServicosApi.Business
                             origem = servico.Origem.ToString(),
                             quantidadeErros = qtdErro.ToString(),
                             erro = qtdErro > 0 ? true : false,
+                            //quantidadeErros = erros != null ? erros.QuantidadeErros.ToString() : "0",
+                            //erro = erros != null ? true : false,
                             tags = servico.Tags
                         });
-                        //objs.Add(obj);
                     }
                     catch (Exception ex)
                     {
@@ -173,18 +171,6 @@ namespace MonitoriaServicosApi.Business
                     objs = objs.Where(x => x.erro == erro).ToList();
                 }
 
-                //if (filtroServico.tags != null)
-                //{
-                //    var tags = new List<string>();
-                //    foreach (var item in filtroServico.tags)
-                //    {
-                //        tags.Add(item.ToString());
-                //    }
-
-                //    objs = objs.Where(x => x.tags.Intersect(tags).Any()).ToList();
-
-                //    //result &= filtro.Where(x => x.Tags.Intersect(tags).Any());
-                //}
             }
             catch (Exception ex )
             {

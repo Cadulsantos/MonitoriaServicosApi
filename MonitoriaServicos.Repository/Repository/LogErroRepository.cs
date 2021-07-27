@@ -1,4 +1,5 @@
 ﻿using MongoDB.Driver;
+using MonitoriaServicos.Models.ViewModels;
 using MonitoriaServicosApi.Models.Models;
 using MonitoriaServicosApi.Models.Models.Enum;
 using MonitoriaServicosApi.Repository.Repository.Interface;
@@ -52,6 +53,22 @@ namespace MonitoriaServicosApi.Repository.Repository
             return result;
         }
 
+        public List<ServicoViewModel> GetQtdErrosServico()
+        {
+            var logs = (from logErro in collectionProadv.AsQueryable()
+                        where logErro.ServicoId != null && logErro.ServicoId != "" && logErro.Resolvido == false
+                        group logErro by logErro.ServicoId
+                        into grpLogErro
+                        select new ServicoViewModel
+                        {
+                           Id = grpLogErro.Key,
+                           QuantidadeErros = grpLogErro.Count()
+                        }
+
+                        ).ToList();
+
+            return logs;
+        }
 
         public IQueryable<LogErroServico> GetLogErroServico(string idServico)
         {
