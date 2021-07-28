@@ -20,7 +20,8 @@ namespace MonitoriaServicosApi.Repository.Repository
                 .Set(x => x.NomeArgument, servico.NomeArgument)
                 .Set(x => x.Ativo, servico.Ativo)
                 .Set(x => x.Periodicidade, servico.Periodicidade)
-                .Set(x => x.Descricao, servico.Descricao);
+                .Set(x => x.Descricao, servico.Descricao)
+                .Set(x => x.Tags, servico.Tags);
 
            var result = collection.UpdateOne(x => x.Id == servico.Id, update);
             return result.IsAcknowledged && result.ModifiedCount > 0;

@@ -8,6 +8,11 @@ namespace MonitoriaServicosApi.Models.Models
     [BsonIgnoreExtraElements]
     public class Servico
     {
+        public Servico()
+        {
+            Tags = new List<string>();
+        }
+
         [BsonId]
         [BsonRepresentation(BsonType.ObjectId)]
         public string Id { get; set; }

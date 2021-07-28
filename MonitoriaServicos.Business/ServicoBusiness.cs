@@ -31,8 +31,15 @@ namespace MonitoriaServicosApi.Business
                 NomeArgument = informacoes.nomeArgument,
                 Ativo = informacoes.ativo == "true" ? true : false,
                 Periodicidade = informacoes.periodicidade,
-                Descricao = informacoes.descricao
+                Descricao = informacoes.descricao,
             };
+
+            foreach (var item in informacoes.tags)
+            {
+                string tag = item;
+                servico.Tags.Add(tag);
+            }
+
             return _servicoRepository.AtualizaServico(servico);
         }
 
