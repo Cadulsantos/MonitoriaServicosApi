@@ -53,10 +53,15 @@ namespace MonitoriaServicosApi.Repository.Repository
             return result;
         }
 
-        public List<ServicoViewModel> GetQtdErrosServico()
+        public List<LogErroServico> GetErrosServicoByExpression(FilterDefinition<LogErroServico> filtro)
+        {
+            return collectionProadv.Find(filtro).ToList();
+        }
+
+        public List<ServicoViewModel> GetQtdErrosServico(List<string> listServ)
         {
             var logs = (from logErro in collectionProadv.AsQueryable()
-                        where logErro.ServicoId != null && logErro.ServicoId != "" && logErro.Resolvido == false
+                        where logErro.ServicoId != null && logErro.ServicoId != "" && logErro.Resolvido == false && listServ.Contains(logErro.ServicoId)
                         group logErro by logErro.ServicoId
                         into grpLogErro
                         select new ServicoViewModel

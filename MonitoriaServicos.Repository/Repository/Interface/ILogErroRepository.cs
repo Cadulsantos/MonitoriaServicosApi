@@ -1,4 +1,5 @@
-﻿using MonitoriaServicos.Models.ViewModels;
+﻿using MongoDB.Driver;
+using MonitoriaServicos.Models.ViewModels;
 using MonitoriaServicosApi.Models.Models;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +22,8 @@ namespace MonitoriaServicosApi.Repository.Repository.Interface
 
         List<dynamic> GetQtdLogsErro();
 
-        List<ServicoViewModel> GetQtdErrosServico();
+        List<ServicoViewModel> GetQtdErrosServico(List<string> listServ);
+
+        List<LogErroServico> GetErrosServicoByExpression(FilterDefinition<LogErroServico> filtro);
     }
 }

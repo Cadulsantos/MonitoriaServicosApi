@@ -1,4 +1,5 @@
 ﻿using MongoDB.Driver;
+using MonitoriaServicos.Models.ViewModels;
 using MonitoriaServicosApi.Business.Interface;
 using MonitoriaServicosApi.Models.Models;
 using MonitoriaServicosApi.Repository.Repository;
@@ -43,7 +44,6 @@ namespace MonitoriaServicosApi.Business
             return _servicoRepository.AtualizaServico(servico);
         }
 
-        
         public List<dynamic> GetServicos()
         {
             var servicos = _servicoRepository.GetServicos();
@@ -67,7 +67,7 @@ namespace MonitoriaServicosApi.Business
                         var qtdErro = _logErroRepository.GetQtdErro(servico);
 
                         if (qtdErro > 0)
-                        Console.WriteLine("");
+                            Console.WriteLine("");
 
                         dynamic obj = new
                         {
@@ -132,59 +132,64 @@ namespace MonitoriaServicosApi.Business
                 }
 
                 var servicos = _servicoRepository.GetServicosByExpression(result);
-                //var errosServico = _logErroRepository.GetQtdErrosServico();
+                var errosServico = new List<ServicoViewModel>();
 
-                //Parallel.ForEach(servicos,
-                //    new ParallelOptions { MaxDegreeOfParallelism = 25 },
-                //    servico =>
-                //    {
-                foreach (var servico in servicos)
+                if (filtroServico.erro == null || Convert.ToBoolean(filtroServico.erro))
                 {
-                    try
-                    {
-                        var logExecucao = _logExecucaoServicoRepository.GetLogUltimaExecucaoServico(servico.Id);
-                        var qtdErro = _logErroRepository.GetQtdErro(servico);
-                        //var erros = errosServico.Where(x => x.Id == servico.Id).FirstOrDefault();
+                    var listServ = servicos.Select(s => s.Id).ToList();
+                    errosServico = _logErroRepository.GetQtdErrosServico(listServ);
+                }
 
-                        objs.Add(new
+                Parallel.ForEach(servicos,
+                    new ParallelOptions { MaxDegreeOfParallelism = 25 },
+                    servico =>
+                    {
+                        //foreach (var servico in servicos)
+                        //{
+                        try
                         {
-                            id = servico.Id,
-                            nome = servico.Nome,
-                            nomeArgument = servico.NomeArgument,
-                            ativo = servico.Ativo,
-                            descricao = servico.Descricao,
-                            periodicidade = servico.Periodicidade,
-                            data = logExecucao != null && logExecucao.DataInicio.Date != null ? logExecucao.DataInicio : DateTime.MinValue,
-                            dataInicio = logExecucao != null && logExecucao.DataInicio != null ? logExecucao.DataInicio.ToString() : "Serviço não Executado",
-                            dataFim = logExecucao != null && logExecucao.DataFim != null ? logExecucao.DataFim.ToString() : "",
-                            origem = servico.Origem.ToString(),
-                            quantidadeErros = qtdErro.ToString(),
-                            erro = qtdErro > 0 ? true : false,
-                            //quantidadeErros = erros != null ? erros.QuantidadeErros.ToString() : "0",
-                            //erro = erros != null ? true : false,
-                            tags = servico.Tags
-                        });
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new Exception(ex.Message + servico.Id);
-                    }
-                }
-                //});
+                            //var logExecucao = _logExecucaoServicoRepository.GetLogUltimaExecucaoServico(servico.Id);
+                            //var qtdErro = _logErroRepository.GetQtdErro(servico);
+                            var erros = errosServico.Where(x => x.Id == servico.Id).FirstOrDefault();
 
-                if (filtroServico.erro != null)
+                            objs.Add(new
+                            {
+                                id = servico.Id,
+                                nome = servico.Nome,
+                                nomeArgument = servico.NomeArgument,
+                                ativo = servico.Ativo,
+                                descricao = servico.Descricao,
+                                periodicidade = servico.Periodicidade,
+                                //data = logExecucao != null && logExecucao.DataInicio.Date != null ? logExecucao.DataInicio : DateTime.MinValue,
+                                //dataInicio = logExecucao != null && logExecucao.DataInicio != null ? logExecucao.DataInicio.ToString() : "Serviço não Executado",
+                                //dataFim = logExecucao != null && logExecucao.DataFim != null ? logExecucao.DataFim.ToString() : "",
+                                origem = servico.Origem.ToString(),
+                                //quantidadeErros = qtdErro.ToString(),
+                                //erro = qtdErro > 0 ? true : false,
+                                quantidadeErros = erros != null ? erros.QuantidadeErros.ToString() : "0",
+                                erro = erros != null ? true : false,
+                                tags = servico.Tags
+                            });
+                        }
+                        catch (Exception ex)
+                        {
+                            throw new Exception(ex.Message + servico.Id);
+                        }
+                        //}
+                    });
+
+                if (filtroServico.erro != null && Convert.ToBoolean(filtroServico.erro))
                 {
-                    bool erro = Convert.ToBoolean(filtroServico.erro);
-                    objs = objs.Where(x => x.erro == erro).ToList();
+                    objs = objs.Where(x => x.erro).ToList();
                 }
-
             }
-            catch (Exception ex )
+            catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
             }
 
-            return objs.OrderByDescending(x => x.data).ToList();
+            //return objs.OrderByDescending(x => x.data).ToList();
+            return objs;
         }
 
         public dynamic GetTagsServico()
@@ -195,13 +200,15 @@ namespace MonitoriaServicosApi.Business
                 .Where(x => x.Tags.Any()))
                 .Select(s => s.Tags)
                 .ToList()
-                .ForEach(f => {
+                .ForEach(f =>
+                {
                     tags.AddRange(f);
                 });
 
             tags = tags.Distinct().ToList();
 
-            var obj = new {
+            var obj = new
+            {
                 tags = tags
             };
 
